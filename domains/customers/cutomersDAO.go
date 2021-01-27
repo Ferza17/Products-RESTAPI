@@ -1,9 +1,9 @@
 package customers
 
 import (
+	"github.com/Ferza17/Products-RESTAPI/datasources/mysql/interviewproductsDB"
 	"github.com/Ferza17/Products-RESTAPI/utils/errors"
 	"github.com/Ferza17/Products-RESTAPI/utils/logger"
-	customersDB "github.com/Ferza17/Products-RESTAPI/datasources/mysql/interviewproductsDB/customers"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 )
 
 func (c *Customers) Save() *errors.RestError {
-	stmt, err := customersDB.Client.Prepare(queryInsert)
+	stmt, err := interviewproductsDB.Client.Prepare(queryInsert)
 	if err != nil {
 		logger.Error("error while preparing query", err)
 		return errors.NewInternalServerError("Error processing data")
@@ -28,7 +28,7 @@ func (c *Customers) Save() *errors.RestError {
 }
 
 func (c *Customers) Login() *errors.RestError {
-	stmt, err := customersDB.Client.Prepare(queryFindByEmailAndPhone)
+	stmt, err := interviewproductsDB.Client.Prepare(queryFindByEmailAndPhone)
 	if err != nil {
 		logger.Error("error while preparing query", err)
 		return errors.NewInternalServerError("Error processing data")

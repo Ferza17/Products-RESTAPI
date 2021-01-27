@@ -1,4 +1,4 @@
-package customers
+package interviewproductsDB
 
 import (
 	"database/sql"

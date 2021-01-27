@@ -22,7 +22,7 @@ type (
 )
 
 func (c *customersStruct) CreateCustomer(customer customerDomain.Customers) (*customerDomain.Customers, *errors.RestError) {
-	customer.Id = generate.GetRandomString(64)
+	customer.Id = generate.GetRandomString(64,"CustomersIDAutoGenerate")
 	customer.Password = crypt.GetSHA265(customer.Password)
 	t := time.Now()
 	customer.CreatedDate = fmt.Sprintf("%d-%s-%d", t.Year(), t.Month(), t.Day())

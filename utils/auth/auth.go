@@ -9,6 +9,7 @@ import (
 	"github.com/Ferza17/Products-RESTAPI/utils/logger"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"strings"
 	"time"
 )
 
@@ -58,18 +59,21 @@ func ParseTimeToUnix(data interface{}) int64 {
 
 func Authentication(c *gin.Context) {
 	tokenString := c.Request.Header.Get("Authorization")
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if jwt.GetSigningMethod("HS256") != token.Method {
-			return nil, fmt.Errorf("unexpected signing method : %v", token.Header["alg"])
+	str := tokenString
+	str = strings.ReplaceAll(str, "Bearer ", "")
+	_, err := jwt.Parse(str, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("cant verify token")
 		}
-
 		return []byte(env.GetEnvironmentVariable("JWTSECRET")), nil
 	})
 
-	if token != nil && err == nil {
-		fmt.Println("Token Verified")
-	} else {
-		restErr := errors.NewUnauthorized("Invalid Bearer Token")
+	if err != nil {
+		restErr := errors.NewInternalServerError("Unable to verify Token")
 		c.JSON(restErr.Status, restErr)
+		c.Abort()
+		return
 	}
+
+	logger.Info("Token Verified!")
 }
