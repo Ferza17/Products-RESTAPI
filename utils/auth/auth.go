@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/Ferza17/Products-RESTAPI/domains/customers"
 	"github.com/Ferza17/Products-RESTAPI/utils/env"
@@ -45,18 +44,6 @@ func ValidationToken(dataTime int64) bool {
 	return true
 }
 
-func ParseTimeToUnix(data interface{}) int64 {
-	var tm time.Time
-	switch iat := data.(type) {
-	case float64:
-		tm = time.Unix(int64(iat), 0)
-	case json.Number:
-		v, _ := iat.Int64()
-		tm = time.Unix(v, 0)
-	}
-	return tm.Unix()
-}
-
 func Authentication(c *gin.Context) {
 	tokenString := c.Request.Header.Get("Authorization")
 	str := tokenString
@@ -69,7 +56,7 @@ func Authentication(c *gin.Context) {
 	})
 
 	if err != nil {
-		restErr := errors.NewInternalServerError("Unable to verify Token")
+		restErr := errors.NewUnauthorized("Unable to verify Token")
 		c.JSON(restErr.Status, restErr)
 		c.Abort()
 		return

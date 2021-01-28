@@ -13,7 +13,7 @@ func MysqlError(err error) *RestError {
 		}
 
 		if strings.Contains(err.Error(), "token") {
-			return NewBadRequestError("Token Only use Once !")
+			return NewUnauthorized("Token Only use Once !")
 		}
 	}
 

@@ -44,16 +44,7 @@ func (o *orderStruct) CreateOrder(order orderDomain.OrderRequest, oauth oauthDom
 	}
 
 	// Check if token has already been used then return error
-
 	// Insert token, if token already exist return token only use once
-	ok, err := oauth.SearchToken()
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, errors.NewUnauthorized("token is only use once.")
-	}
 
 	// insert token to oauthDB
 	oauth.OrderId = dao.OrderId
