@@ -2,6 +2,7 @@ package order
 
 import (
 	"fmt"
+	oauthDomain "github.com/Ferza17/Products-RESTAPI/domains/oauth"
 	"github.com/Ferza17/Products-RESTAPI/domains/orderDetails"
 	orderDomain "github.com/Ferza17/Products-RESTAPI/domains/orders"
 	"github.com/Ferza17/Products-RESTAPI/utils/errors"
@@ -15,11 +16,11 @@ type (
 	orderStruct struct {
 	}
 	orderInterface interface {
-		CreateOrder(order orderDomain.OrderRequest) (*orderDomain.OrderResponse, *errors.RestError)
+		CreateOrder(order orderDomain.OrderRequest, oauth oauthDomain.Oauth) (*orderDomain.OrderResponse, *errors.RestError)
 	}
 )
 
-func (o *orderStruct) CreateOrder(order orderDomain.OrderRequest) (*orderDomain.OrderResponse, *errors.RestError) {
+func (o *orderStruct) CreateOrder(order orderDomain.OrderRequest, oauth oauthDomain.Oauth) (*orderDomain.OrderResponse, *errors.RestError) {
 	// Token Only one use
 	dao := order.Order
 	// Generate ID order and Id order Details
@@ -42,9 +43,29 @@ func (o *orderStruct) CreateOrder(order orderDomain.OrderRequest) (*orderDomain.
 		})
 	}
 
+	// Check if token has already been used then return error
+
+	// Insert token, if token already exist return token only use once
+	ok, err := oauth.SearchToken()
+	if err != nil {
+		return nil, err
+	}
+
+	if !ok {
+		return nil, errors.NewUnauthorized("token is only use once.")
+	}
+
+	// insert token to oauthDB
+	oauth.OrderId = dao.OrderId
+	oauth.CustomerId = dao.CustomerId
+	oauth.IdToken = generate.GetRandomString(64, "OauthIdToken")
+	if oauthErr := oauth.Save(); oauthErr != nil {
+		return nil, oauthErr
+	}
+
 	result, err := dao.CreateOrder(orderDetail)
 	if err != nil {
-		return &orderDomain.OrderResponse{}, err
+		return nil, err
 	}
 
 	return result, nil

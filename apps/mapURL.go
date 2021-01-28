@@ -30,6 +30,6 @@ func mapURL() {
 	=============================*/
 
 	//Create Order
-	router.POST("/customer/order", auth.Authentication, orderController.CreateOrder)
+	router.Use(auth.Authentication).POST("/customer/order", orderController.CreateOrder)
 
 }

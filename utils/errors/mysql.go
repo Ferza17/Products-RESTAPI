@@ -11,6 +11,10 @@ func MysqlError(err error) *RestError {
 		if strings.Contains(err.Error(), "phone_number") {
 			return NewBadRequestError("phone_number Already Exist!")
 		}
+
+		if strings.Contains(err.Error(), "token") {
+			return NewBadRequestError("Token Only use Once !")
+		}
 	}
 
 	return nil

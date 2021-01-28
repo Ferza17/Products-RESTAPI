@@ -1,4 +1,4 @@
-package interviewproductsDB
+package oauthDB
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ var (
 	username = env.GetEnvironmentVariable("mysqlUsersUsername")
 	password = env.GetEnvironmentVariable("mysql_users_password")
 	host     = env.GetEnvironmentVariable("mysql_users_host")
-	database = env.GetEnvironmentVariable("DATABASE_PRODUCT")
+	database = env.GetEnvironmentVariable("DATABASE_OAUTH")
 )
 
 func init() {
